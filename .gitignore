@@ -20,3 +20,9 @@ __pycache__/
 ## Ignore ephemeral doc-tool output
 output.csv
 _doctools/*.csv
+
+## Ignore Instagram session files and logs
+insta_session.json
+*.session.json
+logs_instagram/
+upload_logs/
