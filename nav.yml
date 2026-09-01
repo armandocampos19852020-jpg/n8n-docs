@@ -1314,6 +1314,7 @@ nav:
           - HTTP Request node:
               - code/cookbook/http-node/index.md
               - Pagination: code/cookbook/http-node/pagination.md
+          - Instagram Reel Upload Automation: code/cookbook/instagram-automation.md
   - Advanced AI:
       - advanced-ai/index.md
       - "AI Workflow Builder": advanced-ai/ai-workflow-builder.md

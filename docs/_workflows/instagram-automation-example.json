@@ -1,0 +1,138 @@
+{
+  "name": "Instagram Reel Upload Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10
+            }
+          ]
+        }
+      },
+      "id": "schedule-node",
+      "name": "Schedule Daily Upload",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "command": "python _doctools/upload_instagram_reel.py --video {{ $json.videoPath }} --caption \"{{ $json.caption }}\""
+      },
+      "id": "execute-upload",
+      "name": "Upload to Instagram",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [650, 300],
+      "credentials": {
+        "executeCommand": {
+          "id": "1",
+          "name": "Local Execution"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Set video path and caption for daily upload\nconst date = new Date().toISOString().split('T')[0];\n\nreturn {\n  videoPath: `/path/to/videos/daily_${date}.mp4`,\n  caption: `Daily content for ${date} 🚀 #DailyContent #Automation #IA`\n};"
+      },
+      "id": "prepare-data",
+      "name": "Prepare Upload Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.output }}",
+              "operation": "contains",
+              "value2": "¡Éxito!"
+            }
+          ]
+        }
+      },
+      "id": "check-success",
+      "name": "Check Upload Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "message": "✅ Instagram Reel uploaded successfully!\\n\\nOutput: {{ $json.output }}"
+      },
+      "id": "success-notification",
+      "name": "Success Notification",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [1050, 200]
+    },
+    {
+      "parameters": {
+        "message": "❌ Instagram Reel upload failed!\\n\\nError: {{ $json.stderr }}"
+      },
+      "id": "error-notification",
+      "name": "Error Notification",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 1,
+      "position": [1050, 400]
+    }
+  ],
+  "connections": {
+    "Schedule Daily Upload": {
+      "main": [
+        [
+          {
+            "node": "Prepare Upload Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Upload Data": {
+      "main": [
+        [
+          {
+            "node": "Upload to Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Instagram": {
+      "main": [
+        [
+          {
+            "node": "Check Upload Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Upload Success": {
+      "main": [
+        [
+          {
+            "node": "Success Notification",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
